@@ -94,9 +94,6 @@ export const UserForm = ({ defaultValues }: UserFormProps) => {
     enabled: false,
   });
 
-  if (isError && !isLoading && !isFetching) {
-  }
-
   React.useEffect(() => {
     if (isError || data?.erro) {
       form.setError('cep', { type: 'validate', message: 'Cep was not found.' });
@@ -114,8 +111,6 @@ export const UserForm = ({ defaultValues }: UserFormProps) => {
     data.phone = data.phone.replace(/\D/g, '');
     console.log(data);
   }
-
-  console.log(data?.erro);
 
   return (
     <Form {...form}>
@@ -147,7 +142,7 @@ export const UserForm = ({ defaultValues }: UserFormProps) => {
                   <Input placeholder='Surname' {...field} />
                 </FormControl>
                 <FormDescription>
-                  This is your public display name.
+                  This is the surname of the user.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -160,9 +155,9 @@ export const UserForm = ({ defaultValues }: UserFormProps) => {
             name='email'
             render={({ field }) => (
               <FormItem className='flex flex-col  w-full'>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>E-mail</FormLabel>
                 <FormControl>
-                  <Input placeholder='shadcn' {...field} />
+                  <Input placeholder='E-mail' {...field} />
                 </FormControl>
                 <FormDescription>
                   This is the contact email of the user.
@@ -226,7 +221,7 @@ export const UserForm = ({ defaultValues }: UserFormProps) => {
                 <FormLabel>Phone</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder='phone'
+                    placeholder='Phone'
                     {...field}
                     {...registerWithMask('phone', '(99) 99999-9999')}
                   />

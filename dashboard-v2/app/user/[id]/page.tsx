@@ -1,5 +1,5 @@
 'use client';
-import { MockUser } from '../../data';
+import { MockUser } from '../../dashboard/data';
 import { UserForm } from '@/components/dashboard/userForm/userForm';
 
 const UserView = () => {

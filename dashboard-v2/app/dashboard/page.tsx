@@ -2,6 +2,7 @@
 
 import { DataTable } from '@/components/ui/data-table';
 import { columns, MockUser } from '@/app/dashboard/data';
+import { CardDialog } from '@/components/dashboard/cardDialog/cardDialog';
 
 const Dashboard = async () => {
   return (

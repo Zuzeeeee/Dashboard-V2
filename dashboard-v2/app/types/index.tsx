@@ -15,7 +15,7 @@ export interface User {
 }
 
 export interface Card {
-  number: number;
+  number: string;
+  cvv: string;
   expireDate: Date;
-  cvv: number;
 }

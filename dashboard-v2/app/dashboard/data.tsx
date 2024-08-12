@@ -5,6 +5,7 @@ import { DeleteAlert } from '@/components/dashboard/deleteAlert/deleteAlert';
 import { Button } from '@/components/ui/button';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown } from 'lucide-react';
+import Link from 'next/link';
 
 export const MockUser: Partial<User>[] = [
   {
@@ -79,12 +80,18 @@ export const columns: ColumnDef<Partial<User>>[] = [
   },
   {
     id: 'actions',
-    header: () => <span>Actions</span>,
+    header: () => (
+      <Link href='/user/add'>
+        <Button>Add New User</Button>
+      </Link>
+    ),
     cell: ({ row }) => {
       const user = row.original;
       return (
         <div>
-          <Button className='mr-2'>View</Button>
+          <Link href={`/user/${user.id}`}>
+            <Button className='mr-2'>View</Button>
+          </Link>
           <DeleteAlert>Delete</DeleteAlert>
         </div>
       );
