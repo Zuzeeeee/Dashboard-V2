@@ -9,7 +9,6 @@ export interface User {
   street: string;
   province: string;
   city: string;
-  state: string;
 }
 
 export interface Card {

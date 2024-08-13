@@ -12,8 +12,7 @@ export type UserFields =
   | 'cep'
   | 'street'
   | 'province'
-  | 'city'
-  | 'state';
+  | 'city';
 
 export type CardFields = 'number' | 'cvv' | 'expireDate' | 'user_id';
 
@@ -28,6 +27,17 @@ interface SaveCardResponse {
   data?: string;
   errors: Record<CardFields, string[]>;
 }
+
+export const getAge = (dateString: string) => {
+  var today = new Date();
+  var birthDate = new Date(dateString);
+  var age = today.getFullYear() - birthDate.getFullYear();
+  var m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
 
 export const getCep = async ({
   queryKey,
@@ -61,6 +71,16 @@ export const saveUser = async (data: Omit<User, 'id'>) => {
   });
   return (await response.json()) as SaveUserResponse;
 };
+export const deleteUser = async (id: string) => {
+  const response = await fetch(`${uri}/user/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+  return await response.json();
+};
 
 export const getCard = async ({
   queryKey,
@@ -80,4 +100,15 @@ export const saveCard = async (data: Omit<Card, 'id'>) => {
     body: JSON.stringify(data),
   });
   return (await response.json()) as SaveCardResponse;
+};
+
+export const deleteCard = async (id: string) => {
+  const response = await fetch(`${uri}/card/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+  return await response.json();
 };

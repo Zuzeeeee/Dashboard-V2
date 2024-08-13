@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import 'react-day-picker/dist/style.css';
 
 export default function Home() {
   return (

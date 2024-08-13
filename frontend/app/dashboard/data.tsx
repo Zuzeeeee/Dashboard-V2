@@ -9,6 +9,7 @@ import Link from 'next/link';
 
 export const columns: ColumnDef<User>[] = [
   {
+    id: 'name',
     accessorKey: 'name',
     header: ({ column }) => {
       return (
@@ -32,6 +33,7 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
+    id: 'email',
     accessorKey: 'email',
     header: ({ column }) => {
       return (
@@ -47,6 +49,7 @@ export const columns: ColumnDef<User>[] = [
     },
   },
   {
+    id: 'birthDate',
     accessorKey: 'birthDate',
     header: () => <span>Birth Date</span>,
     cell: ({ row }) => {
@@ -60,18 +63,26 @@ export const columns: ColumnDef<User>[] = [
   {
     id: 'actions',
     header: () => (
-      <Link href='/user/add'>
-        <Button className='w-full my-2'>Add New User</Button>
+      <Link href='/user/add' className='w-full'>
+        <Button className='w-full my-2'>
+          {window.outerWidth > 500 ? (
+            'Add New User'
+          ) : (
+            <span className='font-weight-bold'>New User</span>
+          )}
+        </Button>
       </Link>
     ),
     cell: ({ row }) => {
       const user = row.original;
+      const normalClass = 'flex gap-2';
+      const smallClass = 'flex flex-col gap-2';
       return (
-        <div>
-          <Link href={`/user/${user.id}`}>
-            <Button className='mr-2'>View</Button>
+        <div className={window.outerWidth > 500 ? normalClass : smallClass}>
+          <Link className='w-full' href={`/user/${user.id}`}>
+            <Button className='w-full'>View</Button>
           </Link>
-          <DeleteAlert>Delete</DeleteAlert>
+          <DeleteAlert id={user.id}>Delete</DeleteAlert>
         </div>
       );
     },

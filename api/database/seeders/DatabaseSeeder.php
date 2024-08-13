@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'birthDate' => new DateTime('18 years ago'),
-            'state' => [
+            'province' => [
                 'Acre',
                 'Alagoas',
                 'Amapá',

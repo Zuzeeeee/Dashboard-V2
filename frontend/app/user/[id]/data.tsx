@@ -17,7 +17,7 @@ export const columns: ColumnDef<Card>[] = [
         <Button
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className='px-0'
+          className='px-2'
         >
           <span>Number</span>
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -25,25 +25,24 @@ export const columns: ColumnDef<Card>[] = [
       );
     },
     cell: ({ row }) => {
-      return <span>{row.original.number}</span>;
+      return (
+        <span className='text-center'>
+          ●●●● {row.original.number.slice(-4)}
+        </span>
+      );
     },
     enableHiding: false,
   },
-  {
-    accessorKey: 'cvv',
-    header: ({ column }) => {
-      return <span>CVV</span>;
-    },
-    cell: ({ row }) => {
-      return <span>***</span>;
-    },
-  },
+
   {
     accessorKey: 'expireDate',
     header: () => <span>Expire Date</span>,
     cell: ({ row }) => {
       {
-        return new Date(row.original.expireDate)?.toLocaleDateString('pt-BR');
+        return new Date(row.original.expireDate)?.toLocaleDateString('pt-BR', {
+          month: '2-digit',
+          year: '2-digit',
+        });
       }
     },
   },
@@ -54,7 +53,9 @@ export const columns: ColumnDef<Card>[] = [
       const card = row.original;
       return (
         <div>
-          <DeleteAlert>Delete</DeleteAlert>
+          <DeleteAlert type='card' id={card.id}>
+            Delete
+          </DeleteAlert>
         </div>
       );
     },

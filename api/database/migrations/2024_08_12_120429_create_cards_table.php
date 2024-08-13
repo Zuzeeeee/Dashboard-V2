@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('number')->unique();
             $table->string('cvv');
             $table->date('expireDate');
-            $table->foreignId('user_id')->references('id')->on('users')->onCascade('delete');
+            $table->foreignId('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }

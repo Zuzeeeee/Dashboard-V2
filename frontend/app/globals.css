@@ -67,6 +67,6 @@
     @apply h-full;
   }
   body {
-    @apply bg-background text-foreground h-full;
+    @apply bg-slate-100 text-foreground h-full;
   }
 }

@@ -40,10 +40,12 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   isLoading?: boolean;
   isFilterable?: boolean;
+  columnsInitialVisibility?: VisibilityState;
 }
 
 export function DataTable<TData, TValue>({
   columns,
+  columnsInitialVisibility,
   data,
   isLoading,
   isFilterable,
@@ -54,7 +56,7 @@ export function DataTable<TData, TValue>({
   );
 
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState<VisibilityState>({ ...columnsInitialVisibility });
   const table = useReactTable({
     data,
     columns,
@@ -65,10 +67,17 @@ export function DataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    rowCount: data.length,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
+    },
+    initialState: {
+      pagination: {
+        pageIndex: 0,
+        pageSize: 5,
+      },
     },
   });
 

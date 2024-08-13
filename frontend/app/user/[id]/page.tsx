@@ -28,7 +28,7 @@ const UserView = ({ params }: { params: { id: string } }) => {
     isLoading: isLoadingCard,
     refetch: refetchCard,
   } = useQuery({
-    queryKey: ['id', `${params.id}`],
+    queryKey: ['cards', `${params.id}`],
     queryFn: getCard,
     enabled: true,
   });
@@ -38,11 +38,15 @@ const UserView = ({ params }: { params: { id: string } }) => {
   }
 
   return (
-    <div>
-      <UserEdit
-        defaultValues={userData?.data[0]}
-        dataCard={dataCard?.data}
-      ></UserEdit>
+    <div className='flex align-items-center '>
+      <div className='flex justify-center items-center  flex-wrap my-8 w-full'>
+        <div className='bg-white p-4 rounded-md drop-shadow-md min-w-[320px] max-w-[600px] '>
+          <UserEdit
+            defaultValues={userData?.data[0]}
+            dataCard={dataCard?.data}
+          ></UserEdit>
+        </div>
+      </div>
     </div>
   );
 };

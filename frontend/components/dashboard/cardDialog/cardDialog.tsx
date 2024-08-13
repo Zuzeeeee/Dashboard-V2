@@ -31,7 +31,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ToastAction } from '@radix-ui/react-toast';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { useParams, useSearchParams } from 'next/navigation';
@@ -65,6 +65,7 @@ interface CardDialogProps {
 
 export const CardDialog = ({ defaultValues, buttonStyle }: CardDialogProps) => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [open, setOpen] = React.useState<boolean>(false);
   const params = useParams();
   const formCard = useForm<z.infer<typeof formSchema>>({
@@ -93,6 +94,7 @@ export const CardDialog = ({ defaultValues, buttonStyle }: CardDialogProps) => {
         return;
       }
       toast({ title: 'Card created successfully.' });
+      queryClient.invalidateQueries({ queryKey: ['cards'] });
       formCard.reset();
       setOpen(false);
     },
@@ -108,9 +110,7 @@ export const CardDialog = ({ defaultValues, buttonStyle }: CardDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant='outline' className={buttonStyle}>
-          Add card
-        </Button>
+        <Button className={buttonStyle}>Add card</Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[375px] max-w-[300px] rounded'>
         <Form key={2} {...formCard}>
