@@ -7,32 +7,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown } from 'lucide-react';
 import Link from 'next/link';
 
-export const MockUser: Partial<User>[] = [
-  {
-    id: '1',
-    name: 'José',
-    surname: 'Alves',
-
-    email: 'josealves7jk@gmail.com',
-    birthDate: new Date(),
-  },
-  {
-    id: '2',
-    name: 'João ',
-    surname: 'Alves',
-    email: 'josealves7jk@gmail.com',
-    birthDate: new Date(),
-  },
-  {
-    id: '3',
-    name: 'José',
-    surname: 'Figueiredo',
-    email: 'josealves7jk@gmail.com',
-    birthDate: new Date(),
-  },
-];
-
-export const columns: ColumnDef<Partial<User>>[] = [
+export const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => {
@@ -75,14 +50,18 @@ export const columns: ColumnDef<Partial<User>>[] = [
     accessorKey: 'birthDate',
     header: () => <span>Birth Date</span>,
     cell: ({ row }) => {
-      return <span>{row.original.birthDate?.toLocaleDateString('pt-BR')}</span>;
+      return (
+        <span>
+          {new Date(row.original.birthDate)?.toLocaleDateString('pt-BR')}
+        </span>
+      );
     },
   },
   {
     id: 'actions',
     header: () => (
       <Link href='/user/add'>
-        <Button>Add New User</Button>
+        <Button className='w-full my-2'>Add New User</Button>
       </Link>
     ),
     cell: ({ row }) => {

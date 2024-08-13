@@ -1,14 +1,12 @@
 'use server';
 
-import { DataTable } from '@/components/ui/data-table';
-import { columns, MockUser } from '@/app/dashboard/data';
-import { CardDialog } from '@/components/dashboard/cardDialog/cardDialog';
+import UserTable from '@/components/dashboard/user-table/user-table';
 
 const Dashboard = async () => {
   return (
     <div className='flex align-items-center'>
       <div className='flex justify-center'>
-        <DataTable columns={columns} data={MockUser} />
+        <UserTable />
       </div>
     </div>
   );

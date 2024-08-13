@@ -26,12 +26,13 @@ import { Calendar } from '@/components/ui/calendar';
 import { useHookFormMask } from 'use-mask-input';
 import { withMask } from 'use-mask-input';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getCep, saveUser, UserFields } from '@/app/utils/utils';
+import { getCard, getCep, saveUser, UserFields } from '@/app/utils/utils';
 import React from 'react';
-import { User } from '@/app/types';
+import { Card, User } from '@/app/types';
 import Link from 'next/link';
-import { useToast } from '@/components/ui/use-toast';
-import { useRouter } from 'next/navigation';
+import { DataTable } from '@/components/ui/data-table';
+import { columns } from '@/app/user/[id]/data';
+import { toast } from '@/components/ui/use-toast';
 
 const getAge = (dateString: string) => {
   var today = new Date();
@@ -54,7 +55,7 @@ const formSchema = z.object({
     .string({
       required_error: 'A date of birth is required.',
     })
-    .refine((birthDate) => getAge(birthDate) < 18, {
+    .refine((birthDate) => getAge(birthDate) > 18, {
       message: 'The user must have at least 18 years.',
     }),
   phone: z.string(),
@@ -69,10 +70,10 @@ const formSchema = z.object({
 
 interface UserFormProps {
   defaultValues?: Partial<User>;
+  dataCard?: Card[];
 }
 
-export const UserForm = ({ defaultValues }: UserFormProps) => {
-  const { toast } = useToast();
+export const UserEdit = ({ defaultValues, dataCard }: UserFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues
@@ -107,7 +108,7 @@ export const UserForm = ({ defaultValues }: UserFormProps) => {
     enabled: false,
   });
 
-  const router = useRouter();
+  console.log(dataCard);
 
   const { mutate } = useMutation({
     mutationFn: saveUser,
@@ -117,8 +118,6 @@ export const UserForm = ({ defaultValues }: UserFormProps) => {
           form.setError(value, { type: 'api', message: data.errors[value][0] });
         });
       }
-      toast({ title: 'User created successfully.' });
-      router.push('/dashboard');
     },
   });
 
@@ -159,7 +158,7 @@ export const UserForm = ({ defaultValues }: UserFormProps) => {
   }
 
   return (
-    <Form {...form}>
+    <Form key={1} {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
         <div className='flex gap-4 justify-center w-full'>
           <FormField
@@ -353,6 +352,7 @@ export const UserForm = ({ defaultValues }: UserFormProps) => {
             </FormItem>
           )}
         />
+        {dataCard && <DataTable columns={columns} data={dataCard}></DataTable>}
 
         <div className='gap-2 flex'>
           <Link href='/dashboard'>

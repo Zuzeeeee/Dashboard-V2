@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
-class StoreUserRequest extends FormRequest
+class SearchCardRequest extends FormRequest
 {
   /**
    * Determine if the user is authorized to make this request.
@@ -15,6 +15,13 @@ class StoreUserRequest extends FormRequest
   public function authorize(): bool
   {
     return true;
+  }
+
+  public function all($keys = null)
+  {
+    $data = parent::all($keys);
+    $data['id'] = $this->route('id');
+    return $data;
   }
 
   /**
@@ -25,22 +32,14 @@ class StoreUserRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'name' => 'required|string|min:3|max:255',
-      'surname' => 'required|string',
-      'phone' => 'required',
-      'email' => 'required|email|unique:users',
-      'birthDate' => 'required|date',
-      'cep' => 'required',
-      'street' => 'required|string',
-      'city' => 'required|string',
-      'province' => 'required|string',
+      'id' => 'required|exists:users',
     ];
   }
 
   public function messages(): array
   {
     return [
-      'street.required' => 'Missing street name.'
+      'id.exists' => 'User not found.',
     ];
   }
 
@@ -49,6 +48,6 @@ class StoreUserRequest extends FormRequest
     throw (new ValidationException($validator))
       ->errorBag($this->errorBag)
       ->redirectTo($this->getRedirectUrl())
-      ->status(400);
+      ->status(404);
   }
 }

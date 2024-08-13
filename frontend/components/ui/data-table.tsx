@@ -13,6 +13,7 @@ import {
   getSortedRowModel,
   ColumnFiltersState,
   getFilteredRowModel,
+  RowData,
 } from '@tanstack/react-table';
 
 import {
@@ -37,16 +38,21 @@ import { ChevronDown } from 'lucide-react';
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  isLoading?: boolean;
+  isFilterable?: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  isLoading,
+  isFilterable,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const table = useReactTable({
@@ -68,43 +74,56 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className='px-4'>
-      <div className='flex items-center py-4'>
-        <Input
-          placeholder='Filter name...'
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
-          className='max-w-sm mr-4'
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='outline' className='ml-auto'>
-              Columns
-              <ChevronDown className='ml-2 size-4' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className='capitalize'
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
+      {isFilterable && (
+        <div className='flex items-center py-4'>
+          <Input
+            placeholder='Filter name...'
+            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+            onChange={(event) =>
+              table.getColumn('name')?.setFilterValue(event.target.value)
+            }
+            className='max-w-sm mr-4'
+          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant='outline' className='ml-auto'>
+                Columns
+                <ChevronDown className='ml-2 size-4' />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align='end'>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className='h-24 text-center'
                   >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+                    Loading…
+                  </TableCell>
+                </TableRow>
+              ) : (
+                table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className='capitalize'
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
       <div className='rounded-md border '>
         <Table>
           <TableHeader>

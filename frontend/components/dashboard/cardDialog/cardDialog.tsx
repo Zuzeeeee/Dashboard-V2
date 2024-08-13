@@ -1,5 +1,6 @@
 'use client';
 import { Card } from '@/app/types';
+import { CardFields, saveCard } from '@/app/utils/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -26,10 +27,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ToastAction } from '@radix-ui/react-toast';
+import { useMutation } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
+import { useParams, useSearchParams } from 'next/navigation';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -49,14 +55,19 @@ const formSchema = z.object({
     .refine((expireDate) => expireDate > new Date(), {
       message: 'The card is expired.',
     }),
+  user_id: z.string({ required_error: 'User is missing.' }),
 });
 
 interface CardDialogProps {
-  defaultValues?: Partial<Card>;
+  defaultValues?: Card;
+  buttonStyle?: React.ComponentProps<'button'>['className'];
 }
 
-export const CardDialog = ({ defaultValues }: CardDialogProps) => {
-  const form = useForm<z.infer<typeof formSchema>>({
+export const CardDialog = ({ defaultValues, buttonStyle }: CardDialogProps) => {
+  const { toast } = useToast();
+  const [open, setOpen] = React.useState<boolean>(false);
+  const params = useParams();
+  const formCard = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues
       ? { ...defaultValues }
@@ -64,21 +75,49 @@ export const CardDialog = ({ defaultValues }: CardDialogProps) => {
           number: '',
           cvv: '',
           expireDate: undefined,
+          user_id: params.id[0] ?? '',
         },
     reValidateMode: 'onChange',
   });
 
+  const { mutate } = useMutation({
+    mutationFn: saveCard,
+    onSuccess: (data) => {
+      if (data && data.errors) {
+        (Object.keys(data.errors) as CardFields[]).map((value) => {
+          formCard.setError(value, {
+            type: 'api',
+            message: data.errors[value][0],
+          });
+        });
+        return;
+      }
+      toast({ title: 'Card created successfully.' });
+      formCard.reset();
+      setOpen(false);
+    },
+  });
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    mutate(values, {
+      onError: (error) => {
+        console.log(error);
+      },
+    });
   };
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant='outline'>Add card</Button>
+        <Button variant='outline' className={buttonStyle}>
+          Add card
+        </Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[375px] max-w-[300px] rounded'>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+        <Form key={2} {...formCard}>
+          <form
+            onSubmit={formCard.handleSubmit(onSubmit)}
+            className='space-y-8'
+          >
             <DialogHeader>
               <DialogTitle>New card</DialogTitle>
               <DialogDescription>
@@ -87,47 +126,39 @@ export const CardDialog = ({ defaultValues }: CardDialogProps) => {
             </DialogHeader>
             <div className='flex gap-2'>
               <FormField
-                control={form.control}
+                control={formCard.control}
                 name='number'
-                render={(field) => {
-                  return (
-                    <FormItem>
-                      <FormLabel className='text-right'>Number</FormLabel>
-                      <FormControl>
-                        <Input
-                          className='col-span-3'
-                          {...field}
-                          maxLength={16}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-right'>Number</FormLabel>
+                    <FormControl>
+                      <Input className='col-span-3' {...field} maxLength={16} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
               <FormField
-                control={form.control}
+                control={formCard.control}
                 name='cvv'
-                render={(field) => {
-                  return (
-                    <FormItem>
-                      <FormLabel className='text-right'>CVV</FormLabel>
-                      <FormControl>
-                        <Input
-                          className='col-span-3 max-w-[100px]'
-                          {...field}
-                          maxLength={3}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-right'>CVV</FormLabel>
+                    <FormControl>
+                      <Input
+                        className='col-span-3 max-w-[100px]'
+                        {...field}
+                        maxLength={3}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
 
             <FormField
-              control={form.control}
+              control={formCard.control}
               name='expireDate'
               render={({ field }) => (
                 <FormItem className='flex flex-col w-full'>
@@ -172,7 +203,7 @@ export const CardDialog = ({ defaultValues }: CardDialogProps) => {
                   <Button variant='secondary'>Close</Button>
                 </DialogClose>
 
-                <Button type='submit'>Save card</Button>
+                <Button>Save card</Button>
               </div>
             </DialogFooter>
           </form>

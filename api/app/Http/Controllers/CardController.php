@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SearchCardRequest;
 use App\Http\Requests\SearchUserRequest;
 use App\Models\Card;
 use App\Http\Requests\StoreCardRequest;
@@ -39,9 +40,9 @@ class CardController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(SearchUserRequest $id)
+    public function show(SearchCardRequest $id)
     {
-        $card = User::find($id)->cards()->get();
+        $card = User::find($id->all()['id'])->cards()->get();
         return response()->json(['data' => $card, 'message' => "Cards retrieved successfully"], 202);
     }
 
