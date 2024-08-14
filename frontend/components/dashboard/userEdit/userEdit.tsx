@@ -26,12 +26,20 @@ import { Calendar, CalendarComponent } from '@/components/ui/calendar';
 import { useHookFormMask } from 'use-mask-input';
 import { withMask } from 'use-mask-input';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getCard, getCep, saveUser, UserFields } from '@/app/utils/utils';
+import {
+  getCard,
+  getCep,
+  saveUser,
+  updateUser,
+  UserFields,
+} from '@/app/utils/utils';
 import React from 'react';
 import { Card, User } from '@/app/types';
 import Link from 'next/link';
 import { DataTable } from '@/components/ui/data-table';
 import { columns } from '@/app/user/[id]/data';
+import { useToast } from '@/components/ui/use-toast';
+import { useParams } from 'next/navigation';
 
 const getAge = (dateString: string) => {
   var today = new Date();
@@ -72,6 +80,8 @@ interface UserFormProps {
 }
 
 export const UserEdit = ({ defaultValues, dataCard }: UserFormProps) => {
+  const { toast } = useToast();
+  const params = useParams();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues
@@ -105,16 +115,18 @@ export const UserEdit = ({ defaultValues, dataCard }: UserFormProps) => {
     enabled: false,
   });
 
-  // const { mutate } = useMutation({
-  //   mutationFn: saveUser,
-  //   onSuccess: (data) => {
-  //     if (data && data.errors) {
-  //       (Object.keys(data.errors) as UserFields[]).map((value) => {
-  //         form.setError(value, { type: 'api', message: data.errors[value][0] });
-  //       });
-  //     }
-  //   },
-  // });
+  const { mutate } = useMutation({
+    mutationFn: updateUser,
+    onSuccess: (data) => {
+      if (data && data.errors) {
+        (Object.keys(data.errors) as UserFields[]).map((value) => {
+          form.setError(value, { type: 'api', message: data.errors[value][0] });
+        });
+        return;
+      }
+      toast({ title: 'User updated successfully.' });
+    },
+  });
 
   React.useEffect(() => {
     if (isLoading) {
@@ -141,9 +153,9 @@ export const UserEdit = ({ defaultValues, dataCard }: UserFormProps) => {
   const registerWithMask = useHookFormMask(form.register);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    let data = { ...values };
+    let data = { id: params['id'][0], ...values };
     data.phone = data.phone.replace(/\D/g, '');
-    // mutate(data);
+    mutate(data);
   }
 
   return (

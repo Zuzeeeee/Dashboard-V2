@@ -71,6 +71,19 @@ export const saveUser = async (data: Omit<User, 'id'>) => {
   });
   return (await response.json()) as SaveUserResponse;
 };
+
+export const updateUser = async (data: User) => {
+  const response = await fetch(`${uri}/user/${data.id}`, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  return (await response.json()) as SaveUserResponse;
+};
+
 export const deleteUser = async (id: string) => {
   const response = await fetch(`${uri}/user/${id}`, {
     method: 'DELETE',
