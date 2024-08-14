@@ -1,0 +1,13 @@
+{
+  "name": "dashboard",
+  "version": "1.0.0",
+  "scripts": {
+    "install": "npm --prefix ./api run install && npm --prefix ./frontend run dev:install",
+    "setup": "npm --prefix ./api run setup && npm --prefix ./frontend run setup",
+    "dev:api": "npm --prefix ./api run dev",
+    "dev:front": "npm --prefix ./frontend run dev"
+  },
+  "author": "José Alves",
+  "license": "ISC",
+  "description": ""
+}

@@ -24,11 +24,7 @@ npm run dev:front
 ### User Endpoints
 
 ```
-GET /api/users?q=&page=
-
-params:
-  q: Search Parameter
-  page: Page Number
+GET /api/user
 
 response:
   200 Paginated users filtered by the Search Parameter
@@ -59,8 +55,8 @@ body:
   city: City that User lives
 
 response:
-  200 Data of user created
-  400 Error Message
+  202 Data of user created
+  400 Errors Messages
 ```
 
 ```
@@ -80,8 +76,8 @@ body:
   city: City that User lives
 
 response:
-  200 Updated data of User
-  400 Error message
+  202 Updated data of User
+  400 Errors messages
 ```
 
 ```
@@ -91,7 +87,8 @@ params:
   id: Id of User to be deleted
 
 response:
-  200 Success Message
+  202 Success Message
+  400 User not found
 ```
 
 ### Card Endpoints
@@ -107,15 +104,13 @@ response:
 ```
 
 ```
-POST /api/card/{id}
-
-params:
-  id: User Id
+POST /api/card/
 
 body:
   number: Card Number
   cvv: CVV Code
   expiredAt: Expiration Date
+  user_id: User Id
 
 response:
   200 Data of created card

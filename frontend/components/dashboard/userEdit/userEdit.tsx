@@ -82,6 +82,7 @@ interface UserFormProps {
 export const UserEdit = ({ defaultValues, dataCard }: UserFormProps) => {
   const { toast } = useToast();
   const params = useParams();
+  const queryClient = useQueryClient();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues
@@ -125,6 +126,7 @@ export const UserEdit = ({ defaultValues, dataCard }: UserFormProps) => {
         return;
       }
       toast({ title: 'User updated successfully.' });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     },
   });
 
